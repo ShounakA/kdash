@@ -3,6 +3,7 @@ pub(crate) mod contexts;
 pub(crate) mod cronjobs;
 pub(crate) mod daemonsets;
 pub(crate) mod deployments;
+pub(crate) mod ingresses;
 pub(crate) mod jobs;
 pub(crate) mod key_binding;
 pub(crate) mod metrics;

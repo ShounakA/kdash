@@ -1,13 +1,13 @@
 use std::fmt;
 
 use anyhow::anyhow;
-use k8s_openapi::api::apps::v1::{DaemonSet, Deployment, ReplicaSet, StatefulSet};
-use k8s_openapi::api::batch::v1::{CronJob, Job};
-use k8s_openapi::api::core::v1::{
-  ConfigMap, Namespace, Node, Pod, ReplicationController, Secret, Service,
+use k8s_openapi::api::{
+  apps::v1::{DaemonSet, Deployment, ReplicaSet, StatefulSet},
+  batch::v1::{CronJob, Job},
+  core::v1::{ConfigMap, Namespace, Node, Pod, ReplicationController, Secret, Service},
+  rbac::v1::{ClusterRole, ClusterRoleBinding, Role, RoleBinding},
+  storage::v1::StorageClass,
 };
-use k8s_openapi::api::rbac::v1::{ClusterRole, ClusterRoleBinding, Role, RoleBinding};
-use k8s_openapi::api::storage::v1::StorageClass;
 use kube::{
   api::{ListMeta, ListParams, ObjectList},
   config::Kubeconfig,
