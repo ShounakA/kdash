@@ -5,6 +5,7 @@ use k8s_openapi::api::{
   apps::v1::{DaemonSet, Deployment, ReplicaSet, StatefulSet},
   batch::v1::{CronJob, Job},
   core::v1::{ConfigMap, Namespace, Node, Pod, ReplicationController, Secret, Service},
+  networking::v1::Ingress,
   rbac::v1::{ClusterRole, ClusterRoleBinding, Role, RoleBinding},
   storage::v1::StorageClass,
 };
@@ -26,6 +27,7 @@ use crate::app::{
   cronjobs::KubeCronJob,
   daemonsets::KubeDaemonSet,
   deployments::KubeDeployment,
+  ingresses::KubeIng,
   jobs::KubeJob,
   metrics::{self, KubeNodeMetrics},
   nodes::KubeNode,
@@ -218,6 +220,13 @@ impl<'a> Network<'a> {
 
     let mut app = self.app.lock().await;
     app.data.services.set_items(items);
+  }
+
+  pub async fn get_ingresses(&self) {
+    let items: Vec<KubeIng> = self.get_namespaced_resources(Ingress::into).await;
+
+    let mut app = self.app.lock().await;
+    app.data.ingresses.set_items(items);
   }
 
   pub async fn get_config_maps(&self) {

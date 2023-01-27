@@ -18,6 +18,7 @@ pub enum IoEvent {
   GetNamespaces,
   GetPods,
   GetServices,
+  GetIngresses,
   GetConfigMaps,
   GetStatefulSets,
   GetReplicaSets,
@@ -128,6 +129,9 @@ impl<'a> Network<'a> {
       }
       IoEvent::GetServices => {
         self.get_services().await;
+      }
+      IoEvent::GetIngresses => {
+        self.get_ingresses().await;
       }
       IoEvent::GetConfigMaps => {
         self.get_config_maps().await;

@@ -296,6 +296,21 @@ async fn handle_route_events(key: Key, app: &mut App) {
             .await;
           }
         }
+        ActiveBlock::Ingresses => {
+          if let Some(res) = handle_block_action(key, &mut app.data.ingresses) {
+            let _ok = handle_describe_decode_or_yaml_action(
+              key,
+              app,
+              &res,
+              IoCmdEvent::GetDescribe {
+                kind: "ingress".to_owned(),
+                value: res.name.to_owned(),
+                ns: Some(res.namespace.to_owned()),
+              },
+            )
+            .await;
+          }
+        }
         ActiveBlock::Deployments => {
           if let Some(res) = handle_block_action(key, &mut app.data.deployments) {
             let _ok = handle_describe_decode_or_yaml_action(
@@ -573,6 +588,7 @@ async fn handle_block_scroll(app: &mut App, up: bool, is_mouse: bool, page: bool
     ActiveBlock::Pods => app.data.pods.handle_scroll(up, page),
     ActiveBlock::Containers => app.data.containers.handle_scroll(up, page),
     ActiveBlock::Services => app.data.services.handle_scroll(up, page),
+    ActiveBlock::Ingresses => app.data.ingresses.handle_scroll(up, page),
     ActiveBlock::Nodes => app.data.nodes.handle_scroll(up, page),
     ActiveBlock::ConfigMaps => app.data.config_maps.handle_scroll(up, page),
     ActiveBlock::StatefulSets => app.data.stateful_sets.handle_scroll(up, page),

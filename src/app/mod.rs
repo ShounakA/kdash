@@ -32,6 +32,7 @@ use self::{
   cronjobs::KubeCronJob,
   daemonsets::KubeDaemonSet,
   deployments::KubeDeployment,
+  ingresses::KubeIng,
   jobs::KubeJob,
   key_binding::DEFAULT_KEYBINDING,
   metrics::KubeNodeMetrics,
@@ -73,6 +74,7 @@ pub enum ActiveBlock {
   DaemonSets,
   CronJobs,
   Secrets,
+  Ingresses,
   RplCtrl,
   StorageClasses,
   Roles,
@@ -124,6 +126,7 @@ pub struct Data {
   pub pods: StatefulTable<KubePod>,
   pub containers: StatefulTable<KubeContainer>,
   pub services: StatefulTable<KubeSvc>,
+  pub ingresses: StatefulTable<KubeIng>,
   pub config_maps: StatefulTable<KubeConfigMap>,
   pub stateful_sets: StatefulTable<KubeStatefulSet>,
   pub replica_sets: StatefulTable<KubeReplicaSet>,
@@ -201,6 +204,7 @@ impl Default for Data {
       pods: StatefulTable::new(),
       containers: StatefulTable::new(),
       services: StatefulTable::new(),
+      ingresses: StatefulTable::new(),
       config_maps: StatefulTable::new(),
       stateful_sets: StatefulTable::new(),
       replica_sets: StatefulTable::new(),
@@ -333,6 +337,7 @@ impl Default for App {
         },
       ]),
       more_resources_menu: StatefulList::with_items(vec![
+        ("Ingresses".into(), ActiveBlock::Ingresses),
         ("Cron Jobs".into(), ActiveBlock::CronJobs),
         ("Secrets".into(), ActiveBlock::Secrets),
         ("Replication Controllers".into(), ActiveBlock::RplCtrl),
@@ -551,6 +556,9 @@ impl App {
       }
       ActiveBlock::Services => {
         self.dispatch(IoEvent::GetServices).await;
+      }
+      ActiveBlock::Ingresses => {
+        self.dispatch(IoEvent::GetIngresses).await;
       }
       ActiveBlock::ConfigMaps => {
         self.dispatch(IoEvent::GetConfigMaps).await;

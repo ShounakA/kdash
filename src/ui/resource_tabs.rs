@@ -25,6 +25,7 @@ static COPY_HINT: &str = "| copy <c>";
 static NODES_TITLE: &str = "Nodes";
 static PODS_TITLE: &str = "Pods";
 static SERVICES_TITLE: &str = "Services";
+static INGRESSES_TITLE: &str = "Ingresses";
 static CONFIG_MAPS_TITLE: &str = "ConfigMaps";
 static STFS_TITLE: &str = "StatefulSets";
 static REPLICA_SETS_TITLE: &str = "ReplicaSets";
@@ -84,6 +85,7 @@ pub fn draw_resource_tabs_block<B: Backend>(f: &mut Frame<'_, B>, app: &mut App,
 fn draw_more<B: Backend>(block: ActiveBlock, f: &mut Frame<'_, B>, app: &mut App, area: Rect) {
   match block {
     // ActiveBlock::More => draw_menu(f, app, area),
+    ActiveBlock::Ingresses => draw_ingresses_tab(block, f, app, area),
     ActiveBlock::CronJobs => draw_cronjobs_tab(block, f, app, area),
     ActiveBlock::Secrets => draw_secrets_tab(block, f, app, area),
     ActiveBlock::RplCtrl => draw_replication_controllers_tab(block, f, app, area),
@@ -765,6 +767,67 @@ fn draw_daemon_sets_block<B: Backend>(f: &mut Frame<'_, B>, app: &mut App, area:
         Cell::from(c.ready.to_string()),
         Cell::from(c.up_to_date.to_string()),
         Cell::from(c.available.to_string()),
+        Cell::from(c.age.to_owned()),
+      ])
+      .style(style_primary(app.light_theme))
+    },
+    app.light_theme,
+    app.is_loading,
+  );
+}
+
+fn draw_ingresses_tab<B: Backend>(
+  block: ActiveBlock,
+  f: &mut Frame<'_, B>,
+  app: &mut App,
+  area: Rect,
+) {
+  draw_resource_tab!(
+    INGRESSES_TITLE,
+    block,
+    f,
+    app,
+    area,
+    draw_ingresses_tab,
+    draw_ingresses_block,
+    app.data.ingresses
+  );
+}
+
+fn draw_ingresses_block<B: Backend>(f: &mut Frame<'_, B>, app: &mut App, area: Rect) {
+  let title = get_resource_title(app, INGRESSES_TITLE, "", app.data.ingresses.items.len());
+
+  draw_resource_block(
+    f,
+    area,
+    ResourceTableProps {
+      title,
+      inline_help: DESCRIBE_YAML_AND_ESC_HINT.into(),
+      resource: &mut app.data.ingresses,
+      table_headers: vec![
+        "Namespace",
+        "Name",
+        "Class Name",
+        "Default Backend",
+        "Rules",
+        "Age",
+      ],
+      column_widths: vec![
+        Constraint::Percentage(21),
+        Constraint::Percentage(26),
+        Constraint::Percentage(16),
+        Constraint::Percentage(11),
+        Constraint::Percentage(11),
+        Constraint::Percentage(11),
+      ],
+    },
+    |c| {
+      Row::new(vec![
+        Cell::from(c.namespace.to_owned()),
+        Cell::from(c.name.to_owned()),
+        Cell::from(c.ing_class_name.to_owned()),
+        Cell::from(c.default_backend.to_string()),
+        Cell::from(c.rules.join("\n ")),
         Cell::from(c.age.to_owned()),
       ])
       .style(style_primary(app.light_theme))
